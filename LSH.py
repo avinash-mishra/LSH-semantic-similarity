@@ -9,9 +9,10 @@ class LSH(object):
 
     def __init__(self):
         self.dr = False
+        self.sparse_matrix = None
 
     def set_sparse_matrix(self, sparse_matrix):
-        """Set the sparse matrix in which the lsh algorithm is runned."""
+        """Set the sparse matrix in which the lsh algorithm has run."""
 
         self.sparse_matrix = sparse_matrix
 
@@ -153,14 +154,17 @@ class LSH(object):
         round_coef = round(sim_coef, 2)
         return round_coef
 
-    def get_similarity(self, matrix=None, langue=None):
+    def get_similarity(self, matrix=None, language=None):
+        print(matrix)
+        print(language)
 
-        if langue == None:
+        if language is None:
             self.set_sparse_matrix(matrix)
 
         else:
-            tfidf = TFIDF(matrix, langue)
+            tfidf = TFIDF(matrix, language)
             sparse_matrix = tfidf.get_sparse_matrix()
+            print(sparse_matrix)
             self.set_sparse_matrix(sparse_matrix)
 
         if self.dr == False:
@@ -171,3 +175,7 @@ class LSH(object):
         signature_matrix = self._get_signature_matrix(permutation_matrix)
         similarity_matrix = self._get_similarity_matrix(signature_matrix)
         return similarity_matrix        
+
+matx = ['Who was the first king of Poland ', ' Who was the first ruler of Poland ', ' Who was the last pharaoh of Egypt ']
+x = LSH()
+x.get_similarity(matx, 'en')

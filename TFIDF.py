@@ -8,44 +8,46 @@ import re
 from stop_words import get_stop_words
 from nltk.tokenize import RegexpTokenizer
 from time import time
+from nltk.stem import PorterStemmer
 from textblob import TextBlob as tb
 
 
 class TFIDF(object):
 
-    def __init__(self, texts, langue):
+    def __init__(self, texts, language):
 
-        nltk.download("rslp")
+        # nltk.download("rslp")
 
         self.texts = texts
-        self.langue = langue
+        self.language = language
         self._list_extracted_values = []
         self._row_axis, self._col_axis = 0, 1
 
         self._df = pd.DataFrame(
             data={'TEXT': self.texts, 'ID': range(len(self.texts))})
+        print(self._df)
 
     def _to_lower_case(self, text):
 
         text = text.lower()
-        text = text.replace('á', 'a')
-        text = text.replace('é', 'e')
-        text = text.replace('í', 'i')
-        text = text.replace('ó', 'o')
-        text = text.replace('ú', 'u')
-        text = text.replace('à', 'a')
-        text = text.replace('ã', 'a')
-        text = text.replace('õ', 'o')
-        text = text.replace('ç', 'c')
-        text = text.replace('â', 'a')
-        text = text.replace('ê', 'e')
-        text = text.replace('ô', 'o')
+        # text = text.replace('á', 'a')
+        # text = text.replace('é', 'e')
+        # text = text.replace('í', 'i')
+        # text = text.replace('ó', 'o')
+        # text = text.replace('ú', 'u')
+        # text = text.replace('à', 'a')
+        # text = text.replace('ã', 'a')
+        # text = text.replace('õ', 'o')
+        # text = text.replace('ç', 'c')
+        # text = text.replace('â', 'a')
+        # text = text.replace('ê', 'e')
+        # text = text.replace('ô', 'o')
 
         return text
 
     def _remove_stopwords(self, text):
 
-        pt_stop = get_stop_words(self.langue)
+        pt_stop = get_stop_words(self.language)
         self._tokenizer = RegexpTokenizer(r'\w+')
 
         tokens = self._tokenizer.tokenize(text)
@@ -69,7 +71,8 @@ class TFIDF(object):
 
     def _get_text_radicals(self, text):
 
-        stemmer = nltk.RSLPStemmer()
+        # stemmer = nltk.RSLPStemmer()
+        stemmer = PorterStemmer()
         blob = tb(text)
         radicals = [stemmer.stem(word) for word in blob.words]
         text_radicals = " ".join(radicals)
@@ -86,6 +89,8 @@ class TFIDF(object):
         return important_radicals
 
     def _extract_tokens(self):
+        print("here you are")
+        print(self._df['TEXT'])
 
         self._df['TEXT'] = self._df.apply(
             lambda row: self._to_lower_case(row['TEXT']), axis=self._col_axis)
@@ -124,6 +129,7 @@ class TFIDF(object):
             words_set += l
 
         words_set = list(set(words_set))
+        print(words_set)
 
         self.tokens_texts = {i: [] for i in range(len(self.texts))}
         for i in range(len(self.texts)):
